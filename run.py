@@ -19,14 +19,19 @@ def get_sales_data():
     """
     Function to get sales data input from the user
     """
+    while True:
+        print("Please enter sales date from the last market day.\n Data should be six numbers separated by commas\n Example 10, 20, 30, 40 , 50")
 
-    print("Please enter sales date from the last market day.\n Data should be six numbers separated by commas\n Example 10, 20, 30, 40 , 50")
+        data_str = input("Please enter your data here:\n")
+        print(f'The data provided is {data_str}')
 
-    data_str = input("Please enter your data here:\n")
-    print(f'The data provided is {data_str}')
+        sales_data = data_str.split(",")
 
-    sales_data = data_str.split(",")
-    validate_data(sales_data)
+        if validate_data(sales_data):
+            print(Data is valid!)
+            break
+    
+    return sales_data
 
 def validate_data(values):
     """
@@ -41,9 +46,22 @@ def validate_data(values):
             )
     except ValueErroras e:
         print(f'Invalid data as {e}. Try again')
+        return False
+    
+    return True
 
+def update_sales_worksheet(data):
+    """
+    Upodate sales worksheet by adding another row to it with the data entered by the user
+    """
+    print('Updating sales worksheet...')
+    sales_worksheet = SHEET.worksheet('sales')
+    sales_worksheet.append_row(data)
+    print('Sales worksheet has been successfully updated!')
 
-get_sales_data()
+data = get_sales_data()
+sales_data = [int(num) for num in data]
+update_sales_worksheet(sales_data)
 
 
 
