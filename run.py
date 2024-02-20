@@ -88,13 +88,23 @@ def update_worksheet(data, worksheet):
 
 #def update_surplus_worksheet(data):
     """
-    #Function to append the surplus data to the surplus tab on Google Sheets
-    """
+    Function to append the surplus data to the surplus tab on Google Sheets
     print('Updating surplus worksheet...')
     surplus_worksheet = SHEET.worksheet('surplus')
     new_stock_row = surplus_worksheet.append_row('surplus_data')
     print("Surplus data has been succesfully updated!")
-    
+    """
+
+def get_last_sales_entries():
+    """
+    Gets sales data per market from the last 5 trading days
+    """
+    sales = SHEET.worksheet('sales')
+    columns = []
+    for ind in range(1, 7):
+        column = sales.col_values(ind)
+        columns.append(column[-5:])
+    return columns
 
 def main():
     """
