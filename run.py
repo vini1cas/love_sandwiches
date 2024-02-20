@@ -1,5 +1,7 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from pprint import pprint
+
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -28,7 +30,7 @@ def get_sales_data():
         sales_data = data_str.split(",")
 
         if validate_data(sales_data):
-            print(Data is valid!)
+            print("Data is valid!")
             break
     
     return sales_data
@@ -42,9 +44,9 @@ def validate_data(values):
         [int(values for value in values)]
         if len(values) != 6:
             raise ValueError(
-                f'Exactly 6 values required. You provided: {len(values})'
+                f'Exactly 6 values required. You provided: {len(values)}'
             )
-    except ValueErroras e:
+    except ValueError as e:
         print(f'Invalid data as {e}. Try again')
         return False
     
@@ -52,16 +54,39 @@ def validate_data(values):
 
 def update_sales_worksheet(data):
     """
-    Upodate sales worksheet by adding another row to it with the data entered by the user
+    Update sales worksheet by adding another row to it with the data entered by the user
     """
     print('Updating sales worksheet...')
     sales_worksheet = SHEET.worksheet('sales')
-    sales_worksheet.append_row(data)
+    sales_row = sales_worksheet.append_row(data)
     print('Sales worksheet has been successfully updated!')
 
-data = get_sales_data()
-sales_data = [int(num) for num in data]
-update_sales_worksheet(sales_data)
+def calculate_surplus(sales_data):
+    """
+    Calculate surplus stock after each trading day. 
+    Positive values refer to left-over stock while negative values refer to stock that had to be made on the day 
+    """
+    global sales_row
+    stock = SHEET.worksheet('stock').get_all_values
+    stock_row = stock[-1]
+
+    surplus_data = []
+    for stock, sales in zip(stock_row, sales_row):
+        surplus = int(stock) - sales
+        surplus_data.append(surplus)
+
+    return surplus_data
+
+
+def main():
+    """
+    Main function to run all other functions in the program
+    """
+    data = get_sales_data()
+    sales_data = [int(num) for num in data]
+    update_sales_worksheet(sales_data)
+    new_surplus_data = calculate_surplus(sales_data)
+    main()
 
 
 
